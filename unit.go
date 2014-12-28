@@ -18,6 +18,8 @@ type Pos struct {
 	Y int
 }
 
+type Snapshot map[Pos]Unit
+
 type Unit struct {
 	Side  Side
 	Value int
@@ -55,6 +57,11 @@ type Game struct {
 	formatter Formatter
 }
 
+func (this *Game) clear() {
+	for _, v := range this.unitMap {
+		v.SetNone()
+	}
+}
 func (this *Game) reset() {
 	this.unitMap = make(map[Pos]*Unit)
 	var x = 0
@@ -128,6 +135,15 @@ func (this *Game) ToText() (r string) {
 		r += line
 		y -= 1
 	}
+	return
+}
+
+func (this *Game) LoadSnapshot(s Snapshot) (err error) {
+        this.clear()
+	for k, v := range s {
+		this.unitMap[k].Turn(&v)
+	}
+	//log.Println(lines)
 	return
 }
 
