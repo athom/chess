@@ -6,24 +6,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestDistance(t *testing.T) {
-	Convey("(0,0) (1,1) = 2", t, func() {
-		So(distance(Pos{0, 0}, Pos{1, 1}), ShouldEqual, 2)
-	})
-	Convey("(0,0) (0,0) = 0", t, func() {
-		So(distance(Pos{0, 0}, Pos{0, 0}), ShouldEqual, 0)
-	})
-	Convey("(0,0) (3,0) = 3", t, func() {
-		So(distance(Pos{0, 0}, Pos{3, 0}), ShouldEqual, 3)
-	})
-	Convey("(0,0) (0,3) = 3", t, func() {
-		So(distance(Pos{0, 0}, Pos{0, 3}), ShouldEqual, 3)
-	})
-	Convey("(3,2) (4,9) = 8", t, func() {
-		So(distance(Pos{3, 2}, Pos{4, 9}), ShouldEqual, 8)
-	})
-}
-
 func TestExportGameStateText(t *testing.T) {
 	Convey("initial state", t, func() {
 		g := NewGame(6, NewTextFormatter())
@@ -39,6 +21,16 @@ func TestExportGameStateText(t *testing.T) {
 一二三四五六
 `,
 		)
+	})
+
+	Convey("movable positions", t, func() {
+		//g := NewGame(6, NewTextFormatter())
+		//ps := g.Select(Pos{0, 0})
+		//So(
+		//ps,
+		//ShouldEqual,
+		//[]Pos{Pos{0, 1}},
+		//)
 	})
 
 	Convey("move step", t, func() {
