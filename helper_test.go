@@ -96,7 +96,7 @@ func TestSinglePathY(t *testing.T) {
 	})
 }
 
-func TestShortestPath(t *testing.T) {
+func TestShortestPaths(t *testing.T) {
 	Convey("(0,0) (0,0)", t, func() {
 		So(shortestPaths(Pos{0, 0}, Pos{0, 0}), ShouldBeEmpty)
 	})
@@ -205,6 +205,303 @@ func TestShortestPath(t *testing.T) {
 				Pos{2, 2},
 				Pos{2, 3},
 			},
+		})
+	})
+}
+
+func TestReachablePaths(t *testing.T) {
+	Convey("(0,0) 1 (0,0)", t, func() {
+		So(reachablePaths(Pos{0, 0}, Pos{0, 0}, 1), ShouldBeEmpty)
+	})
+
+	Convey("(0,0) 2 (2,3) too far", t, func() {
+		So(reachablePaths(Pos{0, 0}, Pos{2, 3}, 2), ShouldBeEmpty)
+	})
+
+	Convey("(0,0) 1 (0,1)", t, func() {
+		So(
+			reachablePaths(Pos{0, 0}, Pos{0, 1}, 1),
+			ShouldResemble,
+			[][]Pos{
+				[]Pos{
+					Pos{0, 1},
+				},
+			},
+		)
+	})
+
+	Convey("(0,0) 3 (1,1)", t, func() {
+		So(reachablePaths(Pos{0, 0}, Pos{1, 1}, 3), ShouldBeEmpty)
+	})
+
+	Convey("(1,1) 2 (1,2)", t, func() {
+		So(reachablePaths(Pos{1, 1}, Pos{1, 2}, 2), ShouldBeEmpty)
+	})
+
+	Convey("(1,1) 3 (1,2)", t, func() {
+		So(
+			reachablePaths(Pos{1, 1}, Pos{1, 2}, 3),
+			ShouldResemble,
+			[][]Pos{
+				[]Pos{
+					Pos{0, 1},
+					Pos{0, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{2, 1},
+					Pos{2, 2},
+					Pos{1, 2},
+				},
+			},
+		)
+	})
+
+	Convey("(1,1) 5 (1,2)", t, func() {
+		So(
+			reachablePaths(Pos{1, 1}, Pos{1, 2}, 5),
+			ShouldResemble,
+			[][]Pos{
+				[]Pos{
+					Pos{0, 1},
+					Pos{-1, 1},
+					Pos{-1, 2},
+					Pos{0, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{0, 1},
+					Pos{0, 2},
+					Pos{0, 3},
+					Pos{1, 3},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{2, 1},
+					Pos{3, 1},
+					Pos{3, 2},
+					Pos{2, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{2, 1},
+					Pos{2, 2},
+					Pos{2, 3},
+					Pos{1, 3},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{1, 0},
+					Pos{0, 0},
+					Pos{0, 1},
+					Pos{0, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{1, 0},
+					Pos{2, 0},
+					Pos{2, 1},
+					Pos{2, 2},
+					Pos{1, 2},
+				},
+			},
+		)
+	})
+
+	Convey("(0,0) 5 (1,2)", t, func() {
+		So(
+			reachablePaths(Pos{0, 0}, Pos{1, 2}, 5),
+			ShouldResemble,
+			[][]Pos{
+				[]Pos{
+					Pos{-1, 0},
+					Pos{-1, 1},
+					Pos{-1, 2},
+					Pos{0, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{-1, 0},
+					Pos{-1, 1},
+					Pos{0, 1},
+					Pos{0, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{-1, 0},
+					Pos{-1, 1},
+					Pos{0, 1},
+					Pos{1, 1},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{1, 0},
+					Pos{2, 0},
+					Pos{2, 1},
+					Pos{2, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{1, 0},
+					Pos{2, 0},
+					Pos{2, 1},
+					Pos{1, 1},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{1, 0},
+					Pos{1, 1},
+					Pos{0, 1},
+					Pos{0, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{1, 0},
+					Pos{1, 1},
+					Pos{2, 1},
+					Pos{2, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{0, -1},
+					Pos{1, -1},
+					Pos{1, 0},
+					Pos{1, 1},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{0, 1},
+					Pos{-1, 1},
+					Pos{-1, 2},
+					Pos{0, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{0, 1},
+					Pos{1, 1},
+					Pos{2, 1},
+					Pos{2, 2},
+					Pos{1, 2},
+				},
+				[]Pos{
+					Pos{0, 1},
+					Pos{0, 2},
+					Pos{0, 3},
+					Pos{1, 3},
+					Pos{1, 2},
+				},
+			},
+		)
+	})
+}
+
+func TestReachRange(t *testing.T) {
+	Convey("(0,0) 1 step", t, func() {
+		So(reachRange(Pos{0, 0}, 1), ShouldResemble, []Pos{
+			Pos{-1, 0},
+			Pos{0, 1},
+			Pos{1, 0},
+			Pos{0, -1},
+		})
+	})
+	Convey("(1,1) 1 step", t, func() {
+		So(reachRange(Pos{1, 1}, 1), ShouldResemble, []Pos{
+			Pos{0, 1},
+			Pos{1, 2},
+			Pos{2, 1},
+			Pos{1, 0},
+		})
+	})
+
+	Convey("(1,1) 2 steps", t, func() {
+		So(reachRange(Pos{1, 1}, 2), ShouldResemble, []Pos{
+			Pos{0, 0},
+			Pos{-1, 1},
+			Pos{0, 2},
+			Pos{1, 3},
+			Pos{2, 2},
+			Pos{3, 1},
+			Pos{2, 0},
+			Pos{1, -1},
+		})
+	})
+
+	Convey("(0,0) 4 steps", t, func() {
+		So(reachRange(Pos{0, 0}, 4), ShouldResemble, []Pos{
+			Pos{-1, -1},
+			Pos{-2, 0},
+			Pos{-1, 1},
+			Pos{0, 2},
+			Pos{1, 1},
+			Pos{2, 0},
+			Pos{1, -1},
+			Pos{0, -2},
+			Pos{-2, -2},
+			Pos{-3, -1},
+			Pos{-1, -3},
+			Pos{-4, 0},
+			Pos{-3, 1},
+			Pos{-2, 2},
+			Pos{-1, 3},
+			Pos{0, 4},
+			Pos{1, 3},
+			Pos{2, 2},
+			Pos{3, 1},
+			Pos{4, 0},
+			Pos{3, -1},
+			Pos{2, -2},
+			Pos{1, -3},
+			Pos{0, -4},
+		})
+	})
+	Convey("(0,0) 3 steps", t, func() {
+		So(reachRange(Pos{0, 0}, 3), ShouldResemble, []Pos{
+			Pos{-1, 0},
+			Pos{0, 1},
+			Pos{1, 0},
+			Pos{0, -1},
+			Pos{-2, -1},
+			Pos{-3, 0},
+			Pos{-2, 1},
+			Pos{-1, 2},
+			Pos{-1, -2},
+			Pos{0, 3},
+			Pos{1, 2},
+			Pos{2, 1},
+			Pos{3, 0},
+			Pos{2, -1},
+			Pos{1, -2},
+			Pos{0, -3},
+		})
+	})
+}
+
+func TestInsideReachRange(t *testing.T) {
+	Convey("(0,0) 3 steps in board 6x6", t, func() {
+		So(insideReachRange(Pos{0, 0}, 3, 6), ShouldResemble, []Pos{
+			Pos{0, 1},
+			Pos{1, 0},
+			Pos{0, 3},
+			Pos{1, 2},
+			Pos{2, 1},
+			Pos{3, 0},
+		})
+	})
+
+	Convey("(2,4) 3 steps in board 6x6", t, func() {
+		So(insideReachRange(Pos{2, 4}, 3, 6), ShouldResemble, []Pos{
+			Pos{1, 4},
+			Pos{2, 5},
+			Pos{3, 4},
+			Pos{2, 3},
+			Pos{0, 3},
+			Pos{0, 5},
+			Pos{1, 2},
+			Pos{4, 5},
+			Pos{5, 4},
+			Pos{4, 3},
+			Pos{3, 2},
+			Pos{2, 1},
 		})
 	})
 }
