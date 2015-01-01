@@ -3,6 +3,7 @@ package chess
 import (
 	"testing"
 
+	"github.com/athom/goset"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -21,16 +22,6 @@ func TestExportGameStateText(t *testing.T) {
 一二三四五六
 `,
 		)
-	})
-
-	Convey("movable positions", t, func() {
-		//g := NewGame(6, NewTextFormatter())
-		//ps := g.Select(Pos{0, 0})
-		//So(
-		//ps,
-		//ShouldEqual,
-		//[]Pos{Pos{0, 1}},
-		//)
 	})
 
 	Convey("move step", t, func() {
@@ -94,5 +85,81 @@ func TestImportGameStateText(t *testing.T) {
 一二三四五六
 `,
 		)
+	})
+}
+
+func TestGameSelectUnitAndShoePoints(t *testing.T) {
+	Convey("movable positions", t, func() {
+		g := NewGame(6, NewTextFormatter())
+		var ps []Pos
+		ps = g.Select(Pos{0, 0})
+		So(
+			ps,
+			ShouldResemble,
+			[]Pos{
+				Pos{0, 1},
+			},
+		)
+		ps = g.Select(Pos{1, 0})
+		So(
+			ps,
+			ShouldResemble,
+			[]Pos{
+				Pos{0, 1},
+				Pos{1, 2},
+				Pos{2, 1},
+			},
+		)
+		ps = g.Select(Pos{2, 0})
+		So(
+			ps,
+			ShouldResemble,
+			[]Pos{
+				Pos{0, 1},
+				Pos{1, 2},
+				Pos{2, 3},
+				Pos{3, 2},
+				Pos{4, 1},
+			},
+		)
+		ps = g.Select(Pos{3, 0})
+		So(goset.IsEqual(ps, []Pos{
+			Pos{0, 1},
+			Pos{1, 2},
+			Pos{2, 1},
+			Pos{2, 3},
+			Pos{3, 2},
+			Pos{3, 4},
+			Pos{4, 1},
+			Pos{4, 3},
+			Pos{5, 2},
+		}), ShouldBeTrue)
+		ps = g.Select(Pos{4, 0})
+		So(goset.IsEqual(ps, []Pos{
+			Pos{0, 1},
+			Pos{1, 2},
+			Pos{2, 1},
+			Pos{2, 3},
+			Pos{3, 2},
+			Pos{3, 4},
+			Pos{4, 3},
+			Pos{4, 5},
+			Pos{5, 2},
+			Pos{5, 4},
+		}), ShouldBeTrue)
+		ps = g.Select(Pos{5, 0})
+		So(goset.IsEqual(ps, []Pos{
+			Pos{0, 1},
+			Pos{1, 2},
+			Pos{2, 1},
+			Pos{2, 3},
+			Pos{3, 2},
+			Pos{3, 4},
+			Pos{4, 1},
+			Pos{4, 3},
+			Pos{4, 5},
+			Pos{5, 2},
+			Pos{5, 4},
+		}), ShouldBeTrue)
 	})
 }

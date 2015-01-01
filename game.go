@@ -2,14 +2,6 @@ package chess
 
 import "errors"
 
-type Side int
-
-const (
-	NONE  Side = 0
-	BLACK Side = iota
-	WHITE
-)
-
 type Snapshot map[Pos]Unit
 
 func NewGame(size int, formatter Formatter) (r *Game) {
@@ -84,13 +76,47 @@ func (this *Game) Move(srcPos, desPos Pos) (err error) {
 	return
 }
 
+func (this *Game) reachable(u *Unit, fromPos, toPos Pos) bool {
+	paths := reachablePaths(fromPos, toPos, u.Value)
+	badPathCount := 0
+	for _, path := range paths {
+		for i, point := range path {
+			if point.IsOutside(this.size) {
+				badPathCount += 1
+				break
+			}
+			side := this.unitMap[point].Side
+			if side != NONE {
+				if i == len(path)-1 && side != u.Side {
+					break
+				}
+				badPathCount += 1
+				break
+			}
+		}
+	}
+	return badPathCount < len(paths)
+}
+
 func (this *Game) Select(pos Pos) (r []Pos) {
 	unit, ok := this.unitMap[pos]
-	if !ok {
+	if !ok || unit.Side == NONE {
 		return
 	}
-        println(unit)
 
+	points := insideReachRange(pos, unit.Value, this.size)
+	for _, p := range points {
+		// filter points contains unit in my side
+		if u, ok := this.unitMap[p]; ok {
+			if u.Side == unit.Side {
+				continue
+			}
+			if !this.reachable(unit, pos, p) {
+				continue
+			}
+		}
+		r = append(r, p)
+	}
 	return
 }
 

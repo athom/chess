@@ -1,5 +1,13 @@
 package chess
 
+type Side int
+
+const (
+	NONE  Side = 0
+	BLACK Side = iota
+	WHITE
+)
+
 type Unit struct {
 	Side  Side
 	Value int

@@ -183,8 +183,8 @@ func reachRange(p Pos, steps int) (r []Pos) {
 func insideReachRange(p Pos, steps int, length int) (r []Pos) {
 	fullRange := reachRange(p, steps)
 	for _, pos := range fullRange {
-		// filter the inside positions
-		if pos.IsInside(length) {
+		// filter the outside positions
+		if pos.IsOutside(length) {
 			continue
 		}
 		r = append(r, pos)
