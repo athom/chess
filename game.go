@@ -2,6 +2,12 @@ package chess
 
 import "errors"
 
+var (
+	ErrIllegalMove      = errors.New("illegal move")
+	ErrGameOverWhiteWin = errors.New("game over, white win")
+	ErrGameOverBlackWin = errors.New("game over, black win")
+)
+
 type Snapshot map[Pos]Unit
 
 func NewGame(size int, formatter Formatter) (r *Game) {
@@ -55,20 +61,40 @@ func (this *Game) reset() {
 
 }
 
-func (this *Game) Move(srcPos, desPos Pos) (err error) {
+func (this *Game) Move(srcPos, desPos Pos, side Side) (err error) {
+	if side == WHITE {
+		srcPos = this.transform(srcPos)
+		desPos = this.transform(desPos)
+	}
+
 	srcUnit, ok := this.unitMap[srcPos]
-	if !ok || srcUnit.Side == NONE {
-		err = errors.New("illegal move")
+	if !ok || srcUnit.Side != side {
+		err = ErrIllegalMove
 		return
 	}
 	desUnit, ok := this.unitMap[desPos]
 	if !ok {
-		err = errors.New("illegal move")
+		err = ErrIllegalMove
 		return
 	}
-	if srcUnit.Value != distance(srcPos, desPos) {
-		err = errors.New("illegal move")
+	// don't eat your self
+	if desUnit.Side == side {
+		err = ErrIllegalMove
 		return
+	}
+
+	if srcUnit.Value != distance(srcPos, desPos) {
+		err = ErrIllegalMove
+		return
+	}
+
+	//if this.blackKing
+	if desUnit.Value == 1 {
+		if desUnit.Side == WHITE {
+			err = ErrGameOverBlackWin
+		} else {
+			err = ErrGameOverWhiteWin
+		}
 	}
 
 	desUnit.Turn(srcUnit)
@@ -142,10 +168,50 @@ func (this *Game) ToText() (r string) {
 	return
 }
 
+func (this *Game) ToText2() (r string) {
+	r += "\n"
+	y := 0
+	for y < this.size {
+		line := ``
+		x := this.size - 1
+		for x >= 0 {
+			u := this.unitMap[Pos{x, y}]
+			if u.Side == WHITE {
+				u.Side = BLACK
+			} else if u.Side == BLACK {
+				u.Side = WHITE
+			}
+			line += this.formatter.Fmt(u)
+			if u.Side == WHITE {
+				u.Side = BLACK
+			} else if u.Side == BLACK {
+				u.Side = WHITE
+			}
+			x -= 1
+		}
+		line += "\n"
+		r += line
+		y += 1
+	}
+	return
+}
+
+func (this *Game) TextView(side Side) (r string) {
+	if side == BLACK {
+		return this.ToText()
+	}
+	return this.ToText2()
+}
+
 func (this *Game) LoadSnapshot(s Snapshot) (err error) {
 	this.clear()
 	for k, v := range s {
 		this.unitMap[k].Turn(&v)
 	}
+	return
+}
+
+func (this *Game) transform(p Pos) (r Pos) {
+	r = Pos{this.size - 1 - p.X, this.size - 1 - p.Y}
 	return
 }

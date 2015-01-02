@@ -8,6 +8,18 @@ const (
 	WHITE
 )
 
+func (this Side) String() string {
+	switch this {
+	case NONE:
+		return "none"
+	case BLACK:
+		return "black"
+	case WHITE:
+		return "white"
+	}
+	return ""
+}
+
 type Unit struct {
 	Side  Side
 	Value int

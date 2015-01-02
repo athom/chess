@@ -6,7 +6,7 @@ type Formatter interface {
 
 func NewTextFormatter() (r *TextFormatter) {
 	r = &TextFormatter{
-		whiteLooking: map[int]string{
+		blackLooking: map[int]string{
 			1: " 1",
 			2: " 2",
 			3: " 3",
@@ -18,7 +18,7 @@ func NewTextFormatter() (r *TextFormatter) {
 			9: " 9",
 		},
 
-		blackLooking: map[int]string{
+		whiteLooking: map[int]string{
 			1: "一",
 			2: "二",
 			3: "三",
