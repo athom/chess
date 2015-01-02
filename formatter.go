@@ -1,7 +1,7 @@
 package chess
 
 type Formatter interface {
-	Fmt(*Unit) string
+	Fmt(*Unit, Side) string
 }
 
 func NewTextFormatter() (r *TextFormatter) {
@@ -38,12 +38,20 @@ type TextFormatter struct {
 	whiteLooking map[int]string
 }
 
-func (this *TextFormatter) Fmt(u *Unit) (r string) {
+func (this *TextFormatter) Fmt(u *Unit, sideView Side) (r string) {
 	switch u.Side {
 	case BLACK:
-		r = this.blackLooking[u.Value]
+		if sideView == BLACK {
+			r = this.blackLooking[u.Value]
+		} else {
+			r = this.whiteLooking[u.Value]
+		}
 	case WHITE:
-		r = this.whiteLooking[u.Value]
+		if sideView == BLACK {
+			r = this.whiteLooking[u.Value]
+		} else {
+			r = this.blackLooking[u.Value]
+		}
 	default:
 		r = " 0"
 	}

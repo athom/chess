@@ -150,59 +150,6 @@ func (this *Game) ToJson() (r []byte) {
 	return
 }
 
-func (this *Game) ToText() (r string) {
-	r += "\n"
-	y := this.size - 1
-	for y >= 0 {
-		line := ``
-		x := 0
-		for x < this.size {
-			u := this.unitMap[Pos{x, y}]
-			line += this.formatter.Fmt(u)
-			x += 1
-		}
-		line += "\n"
-		r += line
-		y -= 1
-	}
-	return
-}
-
-func (this *Game) ToText2() (r string) {
-	r += "\n"
-	y := 0
-	for y < this.size {
-		line := ``
-		x := this.size - 1
-		for x >= 0 {
-			u := this.unitMap[Pos{x, y}]
-			if u.Side == WHITE {
-				u.Side = BLACK
-			} else if u.Side == BLACK {
-				u.Side = WHITE
-			}
-			line += this.formatter.Fmt(u)
-			if u.Side == WHITE {
-				u.Side = BLACK
-			} else if u.Side == BLACK {
-				u.Side = WHITE
-			}
-			x -= 1
-		}
-		line += "\n"
-		r += line
-		y += 1
-	}
-	return
-}
-
-func (this *Game) TextView(side Side) (r string) {
-	if side == BLACK {
-		return this.ToText()
-	}
-	return this.ToText2()
-}
-
 func (this *Game) LoadSnapshot(s Snapshot) (err error) {
 	this.clear()
 	for k, v := range s {

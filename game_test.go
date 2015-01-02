@@ -7,82 +7,6 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
-func TestExportGameStateText(t *testing.T) {
-	Convey("initial state", t, func() {
-		g := NewGame(6, NewTextFormatter())
-		So(
-			g.ToText(),
-			ShouldEqual,
-			`
-六五四三二一
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 1 2 3 4 5 6
-`,
-		)
-		So(
-			g.ToText2(),
-			ShouldEqual,
-			`
-六五四三二一
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 1 2 3 4 5 6
-`,
-		)
-	})
-
-	Convey("move step", t, func() {
-		Convey("with correct move", func() {
-			g := NewGame(6, NewTextFormatter())
-			g.Move(Pos{0, 0}, Pos{0, 1}, BLACK)
-			So(
-				g.ToText(),
-				ShouldEqual,
-				`
-六五四三二一
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 1 0 0 0 0 0
- 0 2 3 4 5 6
-`,
-			)
-			So(
-				g.ToText2(),
-				ShouldEqual,
-				`
-六五四三二 0
- 0 0 0 0 0一
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 0 0 0 0 0 0
- 1 2 3 4 5 6
-`,
-			)
-		})
-		Convey("with incorrect move", func() {
-			g := NewGame(6, NewTextFormatter())
-			Convey("at NONE unit", func() {
-				err := g.Move(Pos{0, 1}, Pos{1, 1}, BLACK)
-				So(err, ShouldEqual, ErrIllegalMove)
-			})
-			Convey("at opponent's unit", func() {
-				err := g.Move(Pos{5, 5}, Pos{5, 4}, BLACK)
-				So(err, ShouldEqual, ErrIllegalMove)
-			})
-			Convey("at too far distance", func() {
-				err := g.Move(Pos{0, 0}, Pos{1, 1}, BLACK)
-				So(err, ShouldEqual, ErrIllegalMove)
-			})
-		})
-
-	})
-}
 
 func TestImportGameStateText(t *testing.T) {
 	Convey("load valid manual", t, func() {
@@ -102,7 +26,7 @@ func TestImportGameStateText(t *testing.T) {
 			Pos{1, 4}: Unit{WHITE, 6},
 		})
 		So(
-			g.ToText(),
+			g.TextView(BLACK),
 			ShouldEqual,
 			`
  0 0五 0 0 0
@@ -114,7 +38,7 @@ func TestImportGameStateText(t *testing.T) {
 `,
 		)
 		So(
-			g.ToText2(),
+			g.TextView(WHITE),
 			ShouldEqual,
 			`
 六五四三二一
