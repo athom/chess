@@ -11,8 +11,7 @@ import (
 )
 
 type Client struct {
-	id string
-	//incoming  chan string
+	id       string
 	incoming chan *clientIncomming
 	outgoing chan *chess.Message
 	reader   *bufio.Reader
@@ -109,15 +108,11 @@ func (this *GameHall) BroadcastTips(data string) {
 		msg := chess.NewMessage(data, false)
 		client.outgoing <- msg
 	}
-	//for i, _ := range this.clients {
-	//msg := chess.NewMessage(data, false)
-	//this.clients[i].outgoing <- msg
-	//}
 }
 
 func (this *GameHall) AnnounceGameOver(err error) {
 	for _, client := range this.clients {
-                fmt.Println(client.Side)
+		fmt.Println(client.Side)
 		var text string
 		if err == chess.ErrGameOverBlackWin {
 			if client.Side == chess.BLACK {
@@ -190,18 +185,14 @@ func (this *GameHall) HandleCmd(ci *clientIncomming) {
 		return
 	case READY:
 		if len(this.clients) < 2 {
-			//fromClient.outgoing <- "welcome to yeer's chess\nwaiting for antoher player..."
 			fromClient.moveable = true
 			fromClient.Side = chess.BLACK
 			fromClient.outgoing <- chess.NewMessage("welcome to yeer's chess", false)
 			fromClient.outgoing <- chess.NewMessage("waiting for antoher player...", false)
-			//fromClient.outgoing <- chess.NewMessage("welcome to yeer's chess\nwaiting for antoher player...", false)
 		} else {
 			fromClient.Side = chess.WHITE
 			fromClient.outgoing <- chess.NewMessage("welcome to yeer's chess\n", false)
-			//time.Sleep(100 * time.Millisecond) //TODO solve the sent togather bug, and remove this time waiting magic
 			this.BroadcastTips("found opponent, game start!")
-			//time.Sleep(100 * time.Millisecond) //TODO solve the sent togather bug, and remove this time waiting magic
 			this.BroadcastBoard()
 		}
 		return

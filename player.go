@@ -8,6 +8,22 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func NewPlayer(connection net.Conn) *Player {
+	writer := bufio.NewWriter(connection)
+	reader := bufio.NewReader(connection)
+
+	this := &Player{
+		id:       bson.NewObjectId().Hex(),
+		incoming: make(chan string),
+		outgoing: make(chan string),
+		reader:   reader,
+		writer:   writer,
+	}
+
+	this.Listen()
+	return this
+}
+
 type Player struct {
 	id        string
 	incoming  chan string
@@ -39,20 +55,4 @@ func (this *Player) Write() {
 func (this *Player) Listen() {
 	go this.Read()
 	go this.Write()
-}
-
-func NewPlayer(connection net.Conn) *Player {
-	writer := bufio.NewWriter(connection)
-	reader := bufio.NewReader(connection)
-
-	this := &Player{
-		id:       bson.NewObjectId().Hex(),
-		incoming: make(chan string),
-		outgoing: make(chan string),
-		reader:   reader,
-		writer:   writer,
-	}
-
-	this.Listen()
-	return this
 }
