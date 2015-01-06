@@ -55,3 +55,65 @@ func parsePoint(subCmd string) (r Pos, err error) {
 	r = Pos{x, y}
 	return
 }
+
+func NewPlayerStateParser() (r *PlayerStateParser) {
+	r = &PlayerStateParser{}
+	return
+}
+
+type PlayerStateParser struct {
+}
+
+func (this *PlayerStateParser) Parse(msg string) (r *PlayerState) {
+	for _, s := range []string{
+		"q",
+		"Q",
+		"quit",
+		"QUIT",
+	} {
+		if strings.Contains(msg, s) {
+			r = &PlayerState{
+				State: IN_ABORT,
+			}
+			return
+		}
+	}
+
+	for _, s := range []string{
+		"gg",
+		"GG",
+	} {
+		if strings.Contains(msg, s) {
+			r = &PlayerState{
+				State: IN_GIVEUP,
+			}
+			return
+		}
+	}
+
+	r = &PlayerState{
+		State: IN_ILLEAGLE_OPERATION,
+	}
+	var err error
+	var p1, p2 Pos
+	cmds := strings.Split(msg, ":")
+	if len(cmds) != 2 {
+		return
+	}
+	p1, err = parsePoint(cmds[0])
+	if err != nil {
+		return
+	}
+	p2, err = parsePoint(cmds[1])
+	if err != nil {
+		return
+	}
+
+	mi := NewMoveInfo(p1, p2)
+	r = &PlayerState{
+		State:    IN_MOVE,
+		MoveInfo: mi,
+	}
+
+	return
+}

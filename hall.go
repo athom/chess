@@ -8,7 +8,7 @@ import (
 
 func NewHall() (r *Hall) {
 	r = &Hall{
-		joins: make(chan net.Conn),
+		Joins: make(chan net.Conn),
 	}
 	r.run()
 	return
@@ -16,10 +16,10 @@ func NewHall() (r *Hall) {
 
 type Hall struct {
 	sync.Mutex
-	cmdParser *CmdParser
-	game      *Game
-	players   []*Player
-	joins     chan net.Conn
+	game    *Game
+	rooms   []*Room
+	players []*Player
+	Joins   chan net.Conn
 }
 
 func (this *Hall) Players() []*Player {
@@ -28,21 +28,35 @@ func (this *Hall) Players() []*Player {
 	return this.players
 }
 
+func (this *Hall) Rooms() []*Room {
+	this.Lock()
+	defer this.Unlock()
+	return this.rooms
+}
+
 func (this *Hall) Join(conn net.Conn) {
 	this.Lock()
 	defer this.Unlock()
 	player := NewPlayer(conn)
 	this.players = append(this.players, player)
+	this.matchPlayer(player)
 }
 
-func (this *Hall) MatchPlayer(p *Player) {
+func (this *Hall) matchPlayer(player *Player) {
+	for _, room := range this.rooms {
+		if room.JoinableForPlay() {
+			room.Join(player)
+			return
+		}
+	}
+	this.rooms = append(this.rooms, NewRoom(player))
 }
 
 func (this *Hall) run() {
 	go func() {
 		for {
 			select {
-			case conn := <-this.joins:
+			case conn := <-this.Joins:
 				fmt.Println("Join")
 				this.Join(conn)
 			}

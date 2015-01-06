@@ -32,6 +32,11 @@ func normalize(x1, x2 int) int {
 	return a / b
 }
 
+func flipView(p Pos, width int, height int) (r Pos) {
+	r = Pos{width - 1 - p.X, height - 1 - p.Y}
+	return
+}
+
 func normalizeX(p1 Pos, p2 Pos) int {
 	return normalize(p1.X, p2.X)
 }

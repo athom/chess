@@ -8,8 +8,6 @@ var (
 	ErrGameOverBlackWin = errors.New("game over, black win")
 )
 
-type Snapshot map[Pos]Unit
-
 func NewGame(size int, formatter Formatter) (r *Game) {
 	r = &Game{size: size}
 	r.formatter = formatter
@@ -22,6 +20,7 @@ type Game struct {
 	size      int
 	unitMap   map[Pos]*Unit
 	formatter Formatter
+	over      bool
 }
 
 func (this *Game) clear() {
@@ -30,6 +29,7 @@ func (this *Game) clear() {
 	}
 }
 func (this *Game) reset() {
+	this.over = false
 	this.unitMap = make(map[Pos]*Unit)
 	var x = 0
 	var y = 0
@@ -95,6 +95,7 @@ func (this *Game) Move(srcPos, desPos Pos, side Side) (err error) {
 		} else {
 			err = ErrGameOverWhiteWin
 		}
+		this.over = true
 	}
 
 	desUnit.Turn(srcUnit)
@@ -146,19 +147,30 @@ func (this *Game) Select(pos Pos) (r []Pos) {
 	return
 }
 
-func (this *Game) ToJson() (r []byte) {
+func (this *Game) BoardInfo() (r BoardInfo) {
+	r = BoardInfo{}
+	r.Size = this.size
+	for pos, unit := range this.unitMap {
+		if unit.Side == NONE {
+			continue
+		}
+		r.Units = append(
+			r.Units,
+			UnitInfo{*unit, pos},
+		)
+	}
 	return
 }
 
-func (this *Game) LoadSnapshot(s Snapshot) (err error) {
+func (this *Game) LoadBoardInfo(bi BoardInfo) (err error) {
 	this.clear()
-	for k, v := range s {
-		this.unitMap[k].Turn(&v)
+	for _, u := range bi.Units {
+		this.unitMap[u.Pos].Set(u)
 	}
 	return
 }
 
 func (this *Game) transform(p Pos) (r Pos) {
-	r = Pos{this.size - 1 - p.X, this.size - 1 - p.Y}
+	r = flipView(p, this.size, this.size)
 	return
 }

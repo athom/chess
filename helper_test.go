@@ -505,3 +505,18 @@ func TestInsideReachRange(t *testing.T) {
 		})
 	})
 }
+
+func TestFlipView(t *testing.T) {
+	Convey("flip(0,0) to (5,5) in 6x6 board", t, func() {
+		So(flipView(Pos{0, 0}, 6, 6), ShouldResemble, Pos{5, 5})
+	})
+
+	Convey("flip(0,0) to (3,5) in 4x6 board", t, func() {
+		So(flipView(Pos{0, 0}, 4, 6), ShouldResemble, Pos{3, 5})
+	})
+
+	Convey("flip(2,3) to (4,5) in 4x5 board", t, func() {
+		So(flipView(Pos{2, 3}, 4, 5), ShouldResemble, Pos{1, 1})
+	})
+
+}

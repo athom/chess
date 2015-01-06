@@ -7,6 +7,9 @@ import (
 )
 
 func TestPlayer(t *testing.T) {
-	Convey("players join empty room togather", t, func() {
+	Convey("player be ready", t, func() {
+		//player := NewPlayer(NewConnMocker())
+		//player.Ready()
+		//player.playerState <- &PlayerState{State: IN_READY}
 	})
 }

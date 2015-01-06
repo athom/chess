@@ -17,6 +17,7 @@ func TestPlayerJoinRoom(t *testing.T) {
 		So(r.WhitePlayer(), ShouldEqual, player2)
 		So(r.Watchers(), ShouldContain, player3)
 		So(r.Watchers(), ShouldContain, player4)
+		So(r.JoinableForPlay(), ShouldBeFalse)
 	})
 	Convey("player join empty room", t, func() {
 		player1 := NewPlayer(NewConnMocker())
@@ -25,6 +26,7 @@ func TestPlayerJoinRoom(t *testing.T) {
 		So(r.BlackPlayer(), ShouldEqual, player1)
 		So(r.WhitePlayer(), ShouldBeNil)
 		So(r.Watchers(), ShouldBeEmpty)
+		So(r.JoinableForPlay(), ShouldBeTrue)
 	})
 	Convey("player join room with 1 black player entered", t, func() {
 		player1 := NewPlayer(NewConnMocker())
@@ -63,6 +65,7 @@ func TestPlayerLeaveRoom(t *testing.T) {
 		So(r.BlackPlayer(), ShouldEqual, player1)
 		So(r.WhitePlayer(), ShouldEqual, player2)
 		So(r.Watchers(), ShouldBeEmpty)
+		So(r.JoinableForPlay(), ShouldBeFalse)
 	})
 	Convey("white player leave room", t, func() {
 		player1 := NewPlayer(NewConnMocker())
@@ -73,6 +76,7 @@ func TestPlayerLeaveRoom(t *testing.T) {
 		r.Leave(player2)
 		So(r.BlackPlayer(), ShouldEqual, player1)
 		So(r.WhitePlayer(), ShouldBeNil)
+		So(r.JoinableForPlay(), ShouldBeTrue)
 	})
 	Convey("black player leave room", t, func() {
 		player1 := NewPlayer(NewConnMocker())
@@ -80,6 +84,7 @@ func TestPlayerLeaveRoom(t *testing.T) {
 		r.Join(player1)
 		r.Leave(player1)
 		So(r.BlackPlayer(), ShouldBeNil)
+		So(r.JoinableForPlay(), ShouldBeTrue)
 	})
 }
 

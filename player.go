@@ -2,57 +2,100 @@ package chess
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 
 	"gopkg.in/mgo.v2/bson"
 )
 
-func NewPlayer(connection net.Conn) *Player {
-	writer := bufio.NewWriter(connection)
-	reader := bufio.NewReader(connection)
+type MailBox interface {
+	Receive() *PlayerState
+	Send(*GameState)
+}
 
-	this := &Player{
-		id:       bson.NewObjectId().Hex(),
-		incoming: make(chan string),
-		outgoing: make(chan string),
-		reader:   reader,
-		writer:   writer,
+func NewConsoleMailBox(conn net.Conn) (r MailBox) {
+	r = &ConsoleMailBox{
+		conn:   conn,
+		reader: bufio.NewReader(conn),
+		parser: NewPlayerStateParser(),
+	}
+	return
+}
+
+type ConsoleMailBox struct {
+	conn   net.Conn
+	reader *bufio.Reader
+	parser *PlayerStateParser
+}
+
+func (this *ConsoleMailBox) Receive() (r *PlayerState) {
+	line, err := this.reader.ReadString('\n')
+	if err != nil {
+		r = &PlayerState{State: IN_READY}
+		return
 	}
 
-	this.Listen()
-	return this
+	r = this.parser.Parse(line)
+	return
+}
+func (this *ConsoleMailBox) Send(gs *GameState) {
+	this.conn.Write(gs.ToJson())
+	return
+}
+
+func NewPlayer(conn net.Conn) (r *Player) {
+	r = &Player{
+		id:          bson.NewObjectId().Hex(),
+		mailBox:     NewConsoleMailBox(conn),
+		playerState: make(chan *PlayerState),
+		gameState:   make(chan *GameState),
+	}
+	r.run()
+	return
 }
 
 type Player struct {
-	id        string
-	incoming  chan string
-	outgoing  chan string
-	reader    *bufio.Reader
-	writer    *bufio.Writer
-	firstHand bool
+	id          string
+	side        Side
+	playerState chan *PlayerState
+	gameState   chan *GameState
+	mailBox     MailBox
 }
 
-func (this *Player) Read() {
+func (this *Player) Ready() {
+	this.playerState <- &PlayerState{Id: this.id, State: IN_READY}
+}
+
+func (this *Player) Move() {
+	this.playerState <- &PlayerState{Id: this.id, State: IN_MOVE}
+}
+
+func (this *Player) GiveUp() {
+	this.playerState <- &PlayerState{Id: this.id, State: IN_GIVEUP}
+}
+
+func (this *Player) AbortGame() {
+	this.playerState <- &PlayerState{Id: this.id, State: IN_ABORT}
+}
+
+func (this *Player) execute() {
 	for {
-		line, err := this.reader.ReadString('\n')
-		if err != nil {
-			continue
+		ps := this.mailBox.Receive()
+		this.playerState <- ps
+		ps.Id = this.id
+		ps.Side = this.side
+		if ps.State == IN_ABORT {
+			break
 		}
-		this.incoming <- line
 	}
 }
 
-func (this *Player) Write() {
-	for data := range this.outgoing {
-		//this.writer.WriteString(data)
-		this.writer.Write(NewMessage(data, this.firstHand).ToJson())
-		this.writer.Flush()
-		fmt.Println("out: ", data)
+func (this *Player) report() {
+	for gs := range this.gameState {
+		this.mailBox.Send(gs)
 	}
 }
 
-func (this *Player) Listen() {
-	go this.Read()
-	go this.Write()
+func (this *Player) run() {
+	go this.execute()
+	go this.report()
 }
