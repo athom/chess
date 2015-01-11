@@ -23,13 +23,12 @@ getCanvas = () ->
 
 main = () ->
   canvas = getCanvas()
+  world = new World(canvas)
 
-  world = new World
-  board = new Board(6)
-  unit = new Unit(board, 1, 2, {x: 4, y: 5})
-  world.register board
-  world.register unit
-  world.render(canvas)
+  status_bar = new StatusBar
+  parser = new Parser(world, status_bar)
+  ws = new Websocket(parser)
+  ws.connect()
 
 $ ->
   main()

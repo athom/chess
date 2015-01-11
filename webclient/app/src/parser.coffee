@@ -1,0 +1,30 @@
+class Parser
+  STATE_WAIT = 0
+  STATE_READY = 1
+  STATE_ILLEGAL_OPERATION = 2
+  STATE_BOARD_UPDATED = 3
+  STATE_OPPOENENT_ABORT = 4
+  STATE_OPPOENENT_GIVEUP = 5
+  STATE_GAMEOVER_WIN = 6
+  STATE_GAMEOVER_LOSE = 7
+  STATE_GAMEOVER_FOR_WATCHER = 8
+
+  constructor: (world, status_bar) ->
+    @world = world
+    @status_bar = status_bar
+
+  parse: (data) ->
+    game_state = JSON.parse(data);
+    if game_state.state == STATE_WAIT
+      @status_bar.render("waiting for another player")
+      return
+
+    if game_state.state == STATE_READY
+      @status_bar.render("opponent found, game start!")
+      @world.init_units(game_state.boardInfo)
+      @world.render()
+      return
+
+    if game_state.state == STATE_OPPOENENT_ABORT
+      @status_bar.render("opponent leave suddenly, waiting for another player...")
+      return

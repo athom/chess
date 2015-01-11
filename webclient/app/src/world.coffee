@@ -1,13 +1,25 @@
 class World
-  constructor: () ->
+  constructor: (canvas) ->
+    @canvas = canvas
     @objects = []
-    @ws = new Websocket
-    @ws.connect()
+    @board = new Board(6)
+    @units = []
 
+  init_units: (board_info) ->
+    @units = []
+    for unit in board_info.Units
+      @units.push new Unit(
+        @board,
+        unit.side,
+        unit.value,
+        {
+          x: unit.pos.X,
+          y: unit.pos.Y
+        }
+      )
 
-  register: (obj) ->
-    @objects.push obj
-
-  render: (canvas) ->
-    for obj in @objects
-      obj.render(canvas)
+  render: () ->
+    @canvas.clear()
+    @board.render(@canvas)
+    for unit in @units
+      unit.render(@canvas)

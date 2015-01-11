@@ -46,6 +46,9 @@ Canvas::drawText = (color, font, text, x, y) ->
   x = x - @ctx.measureText(text).width / 2
   @ctx.fillText text, @xscreen(x), @yscreen(y)
 
+Canvas::clear = () ->
+  @ctx.clearRect(0 , 0 , @w, @h)
+
 Canvas::xscreen = (x) ->
   x + @w / 2
 

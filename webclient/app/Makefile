@@ -3,6 +3,7 @@ CONCAT = coffeescript-concat
 # Put coffeescript files here from bottom to top
 SERVER=
 SERVER+= src/canvas.coffee
+SERVER+= src/status_bar.coffee
 SERVER+= src/board.coffee
 SERVER+= src/unit.coffee
 SERVER+= src/websocket.coffee
