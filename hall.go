@@ -2,13 +2,13 @@ package chess
 
 import (
 	"fmt"
-	"net"
 	"sync"
 )
 
 func NewHall() (r *Hall) {
 	r = &Hall{
-		Joins: make(chan net.Conn),
+		//Joins: make(chan net.Conn),
+		Joins: make(chan MailBox),
 	}
 	r.run()
 	return
@@ -19,7 +19,8 @@ type Hall struct {
 	game    *Game
 	rooms   []*Room
 	players []*Player
-	Joins   chan net.Conn
+	//Joins   chan net.Conn
+	Joins chan MailBox
 }
 
 func (this *Hall) Players() []*Player {
@@ -34,7 +35,8 @@ func (this *Hall) Rooms() []*Room {
 	return this.rooms
 }
 
-func (this *Hall) Join(conn net.Conn) {
+//func (this *Hall) Join(conn net.Conn) {
+func (this *Hall) Join(conn MailBox) {
 	this.Lock()
 	defer this.Unlock()
 	player := NewPlayer(conn)

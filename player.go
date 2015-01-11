@@ -1,15 +1,11 @@
 package chess
 
-import (
-	"net"
+import "gopkg.in/mgo.v2/bson"
 
-	"gopkg.in/mgo.v2/bson"
-)
-
-func NewPlayer(conn net.Conn) (r *Player) {
+func NewPlayer(mb MailBox) (r *Player) {
 	r = &Player{
 		id:          bson.NewObjectId().Hex(),
-		mailBox:     NewConsoleMailBox(conn),
+		mailBox:     mb,
 		playerState: make(chan *PlayerState),
 		gameState:   make(chan *GameState),
 	}

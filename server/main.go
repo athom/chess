@@ -11,6 +11,6 @@ func main() {
 	listener, _ := net.Listen("tcp", ":6666")
 	for {
 		conn, _ := listener.Accept()
-		gameHall.Joins <- conn
+		gameHall.Joins <- chess.NewConsoleMailBox(conn)
 	}
 }

@@ -8,10 +8,10 @@ import (
 
 func TestPlayerJoinRoom(t *testing.T) {
 	Convey("players join empty room togather", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
-		player3 := NewPlayer(NewConnMocker())
-		player4 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
+		player3 := NewPlayer(NewMailBoxMocker())
+		player4 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom(player1, player2, player3, player4)
 		So(r.BlackPlayer(), ShouldEqual, player1)
 		So(r.WhitePlayer(), ShouldEqual, player2)
@@ -20,7 +20,7 @@ func TestPlayerJoinRoom(t *testing.T) {
 		So(r.JoinableForPlay(), ShouldBeFalse)
 	})
 	Convey("player join empty room", t, func() {
-		player1 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		So(r.BlackPlayer(), ShouldEqual, player1)
@@ -29,8 +29,8 @@ func TestPlayerJoinRoom(t *testing.T) {
 		So(r.JoinableForPlay(), ShouldBeTrue)
 	})
 	Convey("player join room with 1 black player entered", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -39,9 +39,9 @@ func TestPlayerJoinRoom(t *testing.T) {
 		So(r.Watchers(), ShouldBeEmpty)
 	})
 	Convey("player join room with both black and white player entered", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
-		player3 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
+		player3 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -54,9 +54,9 @@ func TestPlayerJoinRoom(t *testing.T) {
 
 func TestPlayerLeaveRoom(t *testing.T) {
 	Convey("wather leave room", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
-		player3 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
+		player3 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -68,8 +68,8 @@ func TestPlayerLeaveRoom(t *testing.T) {
 		So(r.JoinableForPlay(), ShouldBeFalse)
 	})
 	Convey("white player leave room", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -79,7 +79,7 @@ func TestPlayerLeaveRoom(t *testing.T) {
 		So(r.JoinableForPlay(), ShouldBeTrue)
 	})
 	Convey("black player leave room", t, func() {
-		player1 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Leave(player1)
@@ -90,8 +90,8 @@ func TestPlayerLeaveRoom(t *testing.T) {
 
 func TestPlayerLeaveAndJoinRoom(t *testing.T) {
 	Convey("white player leave room and rejoin", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -101,8 +101,8 @@ func TestPlayerLeaveAndJoinRoom(t *testing.T) {
 		So(r.WhitePlayer(), ShouldEqual, player2)
 	})
 	Convey("black player leave room and rejoin, change player role switched", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -115,15 +115,15 @@ func TestPlayerLeaveAndJoinRoom(t *testing.T) {
 
 func TestGameInRoom(t *testing.T) {
 	Convey("no game when there only 1 player", t, func() {
-		player1 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		So(r.game, ShouldBeNil)
 	})
 
 	Convey("start game when both black and white player are ready", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -131,8 +131,8 @@ func TestGameInRoom(t *testing.T) {
 	})
 
 	Convey("remove game when black player leave", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)
@@ -141,8 +141,8 @@ func TestGameInRoom(t *testing.T) {
 	})
 
 	Convey("remove game when white player leave", t, func() {
-		player1 := NewPlayer(NewConnMocker())
-		player2 := NewPlayer(NewConnMocker())
+		player1 := NewPlayer(NewMailBoxMocker())
+		player2 := NewPlayer(NewMailBoxMocker())
 		r := NewRoom()
 		r.Join(player1)
 		r.Join(player2)

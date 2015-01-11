@@ -11,4 +11,3 @@ class World
   render: (canvas) ->
     for obj in @objects
       obj.render(canvas)
-

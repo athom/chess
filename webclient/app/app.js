@@ -2,6 +2,144 @@
 (function() {
   var Board, Canvas, Unit, Websocket, World, getCanvas, main;
 
+  getCanvas = function() {
+    var c, ctx, height, ratio, ratioh, ratiow, width;
+    width = 1280.0;
+    height = 800.0;
+    c = document.getElementById("chess-board");
+    ctx = c.getContext("2d");
+    c.width = window.innerWidth;
+    c.height = window.innerHeight;
+    ratiow = c.width / width;
+    ratioh = c.height / height;
+    if (ratiow < ratioh) {
+      ratio = ratiow;
+      c.height = height * ratio;
+    } else {
+      ratio = ratioh;
+      c.width = width * ratio;
+    }
+    ctx.scale(ratio, ratio);
+    return new Canvas(ctx, width, height);
+  };
+
+  main = function() {
+    var board, canvas, unit, world;
+    canvas = getCanvas();
+    world = new World;
+    board = new Board(6);
+    unit = new Unit(board, 1, 2, {
+      x: 4,
+      y: 5
+    });
+    world.register(board);
+    world.register(unit);
+    return world.render(canvas);
+  };
+
+  $(function() {
+    return main();
+  });
+
+  World = (function() {
+    function World() {
+      this.objects = [];
+      this.ws = new Websocket;
+      this.ws.connect();
+    }
+
+    World.prototype.register = function(obj) {
+      return this.objects.push(obj);
+    };
+
+    World.prototype.render = function(canvas) {
+      var obj, _i, _len, _ref, _results;
+      _ref = this.objects;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        obj = _ref[_i];
+        _results.push(obj.render(canvas));
+      }
+      return _results;
+    };
+
+    return World;
+
+  })();
+
+  Websocket = (function() {
+    var WS_HOST;
+
+    WS_HOST = "ws://localhost:7200";
+
+    function Websocket() {
+      this.ws_conn = null;
+    }
+
+    Websocket.prototype.connect = function() {
+      if (this.ws_conn !== null) {
+        return;
+      }
+      this.ws_conn = new WebSocket(WS_HOST + "/ws");
+      this.ws_conn.onopen = function(data) {
+        return console.log(data);
+      };
+      this.ws_conn.onmessage = function(data) {
+        return console.log(data);
+      };
+      this.ws_conn.onclose = function(data) {
+        debugger;
+      };
+      return this.ws_conn.onerror = function(data) {
+        return alert("error");
+      };
+    };
+
+    Websocket.prototype.send = function(data) {
+      if (this.ws_conn === null) {
+        this.connect();
+      }
+      return this.ws_conn.send(data);
+    };
+
+    return Websocket;
+
+  })();
+
+  Unit = (function() {
+    var COLOR_CIRCLE, COLOR_UNIT_BLACK, COLOR_UNIT_WHITE;
+
+    COLOR_CIRCLE = 'RGB(244, 122, 2)';
+
+    COLOR_UNIT_BLACK = 'RGB(0, 0, 0)';
+
+    COLOR_UNIT_WHITE = 'RGB(255, 255, 255)';
+
+    function Unit(board, side, value, pos) {
+      this.board = board;
+      this.side = side;
+      this.value = value;
+      this.pos = pos;
+    }
+
+    Unit.prototype.render = function(canvas) {
+      var point, r;
+      point = this.board.position2point(this.pos);
+      r = this.board.radius();
+      if (this.side === 1) {
+        canvas.drawCircle(COLOR_CIRCLE, point.x, point.y, r);
+        canvas.fillCircle(COLOR_UNIT_BLACK, point.x, point.y, r);
+        return canvas.drawText(COLOR_UNIT_WHITE, "80px Arial", this.value, point.x, point.y + 30);
+      } else {
+        canvas.drawCircle(COLOR_CIRCLE, point.x, point.y, r);
+        return canvas.drawText(COLOR_UNIT_BLACK, "80px Arial", this.value, point.x, point.y + 30);
+      }
+    };
+
+    return Unit;
+
+  })();
+
   Board = (function() {
     var COLOR_BORDER, COLOR_LINE, HEIGHT, WIDTH;
 
@@ -124,136 +262,5 @@
   Canvas.prototype.yscreen = function(y) {
     return y + this.h / 2;
   };
-
-  getCanvas = function() {
-    var c, ctx, height, ratio, ratioh, ratiow, width;
-    width = 1280.0;
-    height = 800.0;
-    c = document.getElementById("chess-board");
-    ctx = c.getContext("2d");
-    c.width = window.innerWidth;
-    c.height = window.innerHeight;
-    ratiow = c.width / width;
-    ratioh = c.height / height;
-    if (ratiow < ratioh) {
-      ratio = ratiow;
-      c.height = height * ratio;
-    } else {
-      ratio = ratioh;
-      c.width = width * ratio;
-    }
-    ctx.scale(ratio, ratio);
-    return new Canvas(ctx, width, height);
-  };
-
-  main = function() {
-    var board, canvas, unit, world;
-    canvas = getCanvas();
-    world = new World;
-    board = new Board(6);
-    unit = new Unit(board, 1, 2, {
-      x: 4,
-      y: 5
-    });
-    world.register(board);
-    world.register(unit);
-    return world.render(canvas);
-  };
-
-  $(function() {
-    return main();
-  });
-
-  Unit = (function() {
-    var COLOR_CIRCLE, COLOR_UNIT_BLACK, COLOR_UNIT_WHITE;
-
-    COLOR_CIRCLE = 'RGB(244, 122, 2)';
-
-    COLOR_UNIT_BLACK = 'RGB(0, 0, 0)';
-
-    COLOR_UNIT_WHITE = 'RGB(255, 255, 255)';
-
-    function Unit(board, side, value, pos) {
-      this.board = board;
-      this.side = side;
-      this.value = value;
-      this.pos = pos;
-    }
-
-    Unit.prototype.render = function(canvas) {
-      var point, r;
-      point = this.board.position2point(this.pos);
-      r = this.board.radius();
-      if (this.side === 1) {
-        canvas.drawCircle(COLOR_CIRCLE, point.x, point.y, r);
-        canvas.fillCircle(COLOR_UNIT_BLACK, point.x, point.y, r);
-        return canvas.drawText(COLOR_UNIT_WHITE, "80px Arial", this.value, point.x, point.y + 30);
-      } else {
-        canvas.drawCircle(COLOR_CIRCLE, point.x, point.y, r);
-        return canvas.drawText(COLOR_UNIT_BLACK, "80px Arial", this.value, point.x, point.y + 30);
-      }
-    };
-
-    return Unit;
-
-  })();
-
-  Websocket = (function() {
-    var WS_HOST;
-
-    WS_HOST = "ws://localhost:7200";
-
-    function Websocket() {
-      this.ws_conn = null;
-    }
-
-    Websocket.prototype.connect = function() {
-      if (this.ws_conn !== null) {
-        return;
-      }
-      this.ws_conn = new WebSocket(WS_HOST + "/ws");
-      this.ws_conn.onopen = function(data) {
-        debugger;
-      };
-      this.ws_conn.onmessage = function(data) {
-        debugger;
-      };
-      this.ws_conn.onclose = function(data) {
-        debugger;
-      };
-      return this.ws_conn.onerror = function(data) {
-        debugger;
-      };
-    };
-
-    return Websocket;
-
-  })();
-
-  World = (function() {
-    function World() {
-      this.objects = [];
-      this.ws = new Websocket;
-      this.ws.connect();
-    }
-
-    World.prototype.register = function(obj) {
-      return this.objects.push(obj);
-    };
-
-    World.prototype.render = function(canvas) {
-      var obj, _i, _len, _ref, _results;
-      _ref = this.objects;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        obj = _ref[_i];
-        _results.push(obj.render(canvas));
-      }
-      return _results;
-    };
-
-    return World;
-
-  })();
 
 }).call(this);

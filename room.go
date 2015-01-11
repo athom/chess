@@ -130,6 +130,9 @@ func (this *Room) run() {
 		for {
 			select {
 			case ps := <-this.playerState:
+				if ps == nil {
+					continue
+				}
 				this.handlePlayerState(ps)
 			}
 		}

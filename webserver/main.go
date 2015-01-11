@@ -6,7 +6,6 @@ import (
 	"runtime/debug"
 
 	"github.com/athom/chess"
-	"github.com/bom-d-van/goutil/printutils"
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/cors"
 	"github.com/martini-contrib/gzip"
@@ -42,11 +41,9 @@ func main() {
 		//IndentXML:       true,                           // Output human readable XML
 		//HTMLContentType: "application/xhtml+xml",        // Output XHTML content type instead of default "text/html"
 	}))
-	//m.Use(render.Renderer())
 
 	// routeers
 	m.Get("/ws", websocket.Handler(BuildConnection).ServeHTTP)
-	//m.Get("/ws", BuildConnection)
 
 	//m.Get("/", func() string {
 	//return "Hello Welcome to Yeer Chess"
@@ -60,7 +57,6 @@ func main() {
 }
 
 func BuildConnection(ws *websocket.Conn) {
-	//func BuildConnection(params martini.Params, w http.ResponseWriter, r *http.Request, ws *websocket.Conn) {
 	defer func() {
 		if err := recover(); err != nil {
 			log.Printf("********** WebSocket Error: %+v ***********\n", err)
@@ -68,7 +64,9 @@ func BuildConnection(ws *websocket.Conn) {
 		}
 	}()
 
-	log.Println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-	printutils.PrettyPrint(ws)
-	gameHall.Join(ws)
+	defer ws.Close()
+
+	mb := chess.NewWebsocketMailBox(ws)
+	gameHall.Join(mb)
+	mb.Run()
 }

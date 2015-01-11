@@ -11,13 +11,20 @@ class Websocket
 
     @ws_conn = new WebSocket(WS_HOST + "/ws");
     @ws_conn.onopen = (data) ->
-      debugger
+      console.log data
 
     @ws_conn.onmessage = (data) ->
-      debugger
+      console.log data
+      #debugger
 
     @ws_conn.onclose = (data) ->
       debugger
 
     @ws_conn.onerror = (data) ->
-      debugger
+      alert "error"
+
+  send: (data) ->
+    if @ws_conn == null
+      this.connect()
+
+    @ws_conn.send(data)

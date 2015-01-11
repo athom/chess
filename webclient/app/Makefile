@@ -5,6 +5,8 @@ SERVER=
 SERVER+= src/canvas.coffee
 SERVER+= src/board.coffee
 SERVER+= src/unit.coffee
+SERVER+= src/websocket.coffee
+SERVER+= src/world.coffee
 SERVER+= src/main.coffee
 
 
