@@ -66,6 +66,7 @@ func BuildConnection(ws *websocket.Conn) {
 
 	defer ws.Close()
 
+	log.Println("ws connected ..")
 	mb := chess.NewWebsocketMailBox(ws)
 	gameHall.Join(mb)
 	mb.Run()

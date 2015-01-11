@@ -1,6 +1,10 @@
 package chess
 
-import "golang.org/x/net/websocket"
+import (
+	"io"
+
+	"golang.org/x/net/websocket"
+)
 
 func NewWebsocketMailBox(ws *websocket.Conn) (r *WebsocketMailBox) {
 	r = &WebsocketMailBox{
@@ -24,6 +28,7 @@ func (this *WebsocketMailBox) Receive() (r *PlayerState) {
 	}
 	return
 }
+
 func (this *WebsocketMailBox) Send(gs *GameState) {
 	this.ws.Write(gs.ToJson())
 	return
@@ -32,9 +37,11 @@ func (this *WebsocketMailBox) Send(gs *GameState) {
 func (this *WebsocketMailBox) Run() {
 	for {
 		var b []byte
-		this.ws.Read(b)
-		if b != nil {
-			this.In <- b
+		_, err := this.ws.Read(b)
+		if err != nil && err == io.EOF {
+			this.In <- []byte("q")
+			break
 		}
+		this.In <- b
 	}
 }
