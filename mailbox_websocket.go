@@ -10,21 +10,25 @@ func NewWebsocketMailBox(ws *websocket.Conn) (r *WebsocketMailBox) {
 	r = &WebsocketMailBox{
 		ws:     ws,
 		parser: NewPlayerStateParser(),
-		In:     make(chan []byte),
+		ps:     make(chan *PlayerState),
 	}
 	return
+}
+
+type Move struct {
+	FromPos Pos `json:"from_pos"`
+	ToPos   Pos `json:"to_pos"`
 }
 
 type WebsocketMailBox struct {
 	ws     *websocket.Conn
 	parser *PlayerStateParser
-	In     chan []byte
+	ps     chan *PlayerState
 }
 
 func (this *WebsocketMailBox) Receive() (r *PlayerState) {
-	for msg := range this.In {
-		r = this.parser.Parse(string(msg))
-		return
+	for ps := range this.ps {
+		return ps
 	}
 	return
 }
@@ -36,12 +40,20 @@ func (this *WebsocketMailBox) Send(gs *GameState) {
 
 func (this *WebsocketMailBox) Run() {
 	for {
-		var b []byte
-		_, err := this.ws.Read(b)
+		mi := &MoveInfo{}
+		err := websocket.JSON.Receive(this.ws, &mi)
 		if err != nil && err == io.EOF {
-			this.In <- []byte("q")
+			ps := &PlayerState{
+				State: IN_ABORT,
+			}
+			this.ps <- ps
 			break
 		}
-		this.In <- b
+
+		ps := &PlayerState{
+			State:    IN_MOVE,
+			MoveInfo: mi,
+		}
+		this.ps <- ps
 	}
 }

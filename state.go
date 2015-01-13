@@ -71,8 +71,8 @@ func NewMoveInfo(fromPos, toPos Pos) (r *MoveInfo) {
 }
 
 type MoveInfo struct {
-	FromPos Pos `json:"fromPos"`
-	ToPos   Pos `json:"toPos"`
+	FromPos Pos `json:"from_pos"`
+	ToPos   Pos `json:"to_pos"`
 }
 
 type PlayerState struct {

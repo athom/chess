@@ -50,7 +50,6 @@ func (this *Unit) Set(info UnitInfo) {
 func (this *Unit) SetNone() {
 	this.Side = NONE
 	this.Value = 0
-	this.JustMoved = false
 }
 
 func NewUnit(side Side, v int) (r *Unit) {

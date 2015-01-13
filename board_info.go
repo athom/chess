@@ -5,9 +5,6 @@ import "encoding/json"
 type UnitInfo struct {
 	Unit
 	Pos Pos `json:"pos"`
-	//Side      Side `json:"side"`
-	//Value     int  `json:"value"`
-	//JustMoved bool `json:"just_moved"`
 }
 
 type Units []UnitInfo
@@ -39,8 +36,8 @@ func (this *MyBoardInfo) ToJson() (r []byte) {
 
 func GameOverBoardInfo(bi BoardInfo, side Side) (r *MyBoardInfo) {
 	r = NewMyBoardInfo(bi, side)
-        r.Movable = false
-        return
+	r.Movable = false
+	return
 }
 
 func NewMyBoardInfo(bi BoardInfo, side Side) (r *MyBoardInfo) {

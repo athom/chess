@@ -1,8 +1,8 @@
 package chess
 
 type Pos struct {
-	X int
-	Y int
+        X int `json:"x"`
+        Y int `json:"y"`
 }
 
 func (p *Pos) Move(x, y int) Pos {

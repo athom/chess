@@ -15,6 +15,7 @@ class Parser
 
   parse: (data) ->
     game_state = JSON.parse(data);
+    console.log game_state.state
     if game_state.state == STATE_WAIT
       @status_bar.render("waiting for another player")
       return
@@ -25,6 +26,25 @@ class Parser
       @world.render()
       return
 
+    if game_state.state == STATE_BOARD_UPDATED
+      @world.init_units(game_state.boardInfo)
+      @world.render()
+      return
+
     if game_state.state == STATE_OPPOENENT_ABORT
       @status_bar.render("opponent leave suddenly, waiting for another player...")
+      return
+
+    if game_state.state == STATE_GAMEOVER_WIN
+      @world.init_units(game_state.boardInfo)
+      @world.render()
+      @status_bar.render("congraturations, you win!")
+      alert("congraturations, you win!")
+      return
+
+    if game_state.state == STATE_GAMEOVER_LOSE
+      @world.init_units(game_state.boardInfo)
+      @world.render()
+      @status_bar.render("oh, you lose...")
+      alert("oh, you lose...")
       return

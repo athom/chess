@@ -98,9 +98,16 @@ func (this *Game) Move(srcPos, desPos Pos, side Side) (err error) {
 		this.over = true
 	}
 
+	this.clearJustMoved()
 	desUnit.Turn(srcUnit)
 	srcUnit.SetNone()
 	return
+}
+
+func (this *Game) clearJustMoved() {
+	for _, u := range this.unitMap {
+		u.JustMoved = false
+	}
 }
 
 func (this *Game) reachable(u *Unit, fromPos, toPos Pos) bool {

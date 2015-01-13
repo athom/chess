@@ -5,7 +5,6 @@ class Websocket
     @ws_conn = null
     @parser = parser
 
-
   connect: () ->
     if @ws_conn != null
       return
@@ -16,7 +15,6 @@ class Websocket
       console.log data
 
     @ws_conn.onmessage = (msg_event) ->
-      console.log msg_event.data
       data = msg_event.data
       _parser.parse data
 
@@ -27,7 +25,4 @@ class Websocket
       alert "error"
 
   send: (data) ->
-    if @ws_conn == null
-      this.connect()
-
     @ws_conn.send(data)

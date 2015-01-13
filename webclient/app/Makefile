@@ -8,6 +8,7 @@ SERVER+= src/board.coffee
 SERVER+= src/unit.coffee
 SERVER+= src/websocket.coffee
 SERVER+= src/world.coffee
+SERVER+= src/event_handler.coffee
 SERVER+= src/main.coffee
 
 
