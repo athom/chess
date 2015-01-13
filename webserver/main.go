@@ -21,8 +21,8 @@ func main() {
 	m := martini.Classic()
 	m.Use(gzip.All())
 	m.Use(cors.Allow(&cors.Options{
-		//AllowOrigins: []string{"http://*"},
-		AllowOrigins:     []string{"http://localhost:6001"},
+		AllowOrigins: []string{"http://*"},
+		//AllowOrigins:     []string{"http://localhost:6001"},
 		AllowMethods:     []string{"PUT", "GET", "POST", "DELETE", "OPTIONS"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,

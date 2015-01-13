@@ -83,7 +83,7 @@ func (this *Game) Move(srcPos, desPos Pos, side Side) (err error) {
 		return
 	}
 
-	if srcUnit.Value != distance(srcPos, desPos) {
+	if !this.reachable(srcUnit, srcPos, desPos) {
 		err = ErrIllegalMove
 		return
 	}
