@@ -11,7 +11,6 @@ import (
 	"github.com/martini-contrib/gzip"
 	"github.com/martini-contrib/render"
 	"golang.org/x/net/websocket"
-	//"github.com/gorilla/websocket"
 )
 
 var gameHall = chess.NewHall()
@@ -21,8 +20,7 @@ func main() {
 	m := martini.Classic()
 	m.Use(gzip.All())
 	m.Use(cors.Allow(&cors.Options{
-		AllowOrigins: []string{"http://*"},
-		//AllowOrigins:     []string{"http://localhost:6001"},
+		AllowAllOrigins:  true,
 		AllowMethods:     []string{"PUT", "GET", "POST", "DELETE", "OPTIONS"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -43,11 +41,17 @@ func main() {
 	}))
 
 	// routeers
-	m.Get("/ws", websocket.Handler(BuildConnection).ServeHTTP)
+	//m.Get("/ws", websocket.Handler(BuildConnection).ServeHTTP)
+	wsConfig, err := websocket.NewConfig("ws://localhost:7201", "http://*")
+	if err != nil {
+		panic(err)
+	}
 
-	//m.Get("/", func() string {
-	//return "Hello Welcome to Yeer Chess"
-	//})
+	m.Get("/ws", websocket.Server{
+		Config:  *wsConfig,
+		Handler: BuildConnection,
+	}.ServeHTTP)
+
 	m.Get("/", func(r render.Render) {
 		r.HTML(200, "index", nil)
 	})
