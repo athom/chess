@@ -1,0 +1,28 @@
+# Pakfile[.yaml]
+packages:
+- name: github.com/athom/chess
+  pakname: yeer-chess
+- name: github.com/athom/goset
+  pakname: yeer-chess
+- name: github.com/go-martini/martini
+  pakname: yeer-chess
+- name: github.com/martini-contrib/cors
+  pakname: yeer-chess
+- name: github.com/martini-contrib/gzip
+  pakname: yeer-chess
+- name: github.com/martini-contrib/render
+  pakname: yeer-chess
+- name: golang.org/x/net/websocket
+  pakname: yeer-chess
+
+#
+# Examples:
+#
+# packages:
+# - name: github.com/theplant/req1
+#   pakname: pak
+#   targetbranch: origin/branch1
+# - name: github.com/theplant/req2
+#   pakname: pak
+#   targetbranch: origin/master
+#

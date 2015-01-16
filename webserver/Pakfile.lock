@@ -1,0 +1,7 @@
+github.com/athom/chess: fd5aa1dd1e18a5e931b65208f143e95cad26ff4d
+github.com/athom/goset: a309092e7c58cac52f3dc43bae7779e4f234b69b
+github.com/go-martini/martini: bbd489b35fd7eac9aaf442e5671ab21cdd972926
+github.com/martini-contrib/cors: 553b9208d353a39b0850c02355f478ba020c86d7
+github.com/martini-contrib/gzip: 01cd70f560c841c6e52b9ba8f09748e18e35e2c4
+github.com/martini-contrib/render: b65063311fac6cbf84d3538f5715f7847e648322
+golang.org/x/net/websocket: 1db34d83398887aa887306d261882f799bee3678
