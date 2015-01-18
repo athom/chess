@@ -4,22 +4,22 @@ import (
 	"encoding/json"
 
 	"github.com/athom/chess"
+	"github.com/athom/easysignal"
 
 	"bufio"
 	"fmt"
 	"net"
 	"os"
-	"os/signal"
 )
-
-func handleSignal(conn net.Conn) {
-	_, _ = conn.Write([]byte("QUIT\n"))
-	os.Exit(1)
-}
 
 func main() {
 	conn, err := net.Dial("tcp", ":6666")
 	checkError(err)
+
+	easysignal.OnProcessKilled(func() {
+		_, _ = conn.Write([]byte("QUIT\n"))
+		os.Exit(1)
+	})
 
 	go func() {
 		var bytes [10000]byte
@@ -39,14 +39,6 @@ func main() {
 			}
 		}
 
-	}()
-
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, os.Interrupt, os.Kill)
-		<-c
-		handleSignal(conn)
-		_, _ = conn.Write([]byte("QUIT\n"))
 	}()
 
 	// read input
