@@ -35,13 +35,20 @@ func (this *Hall) Rooms() []*Room {
 	return this.rooms
 }
 
-//func (this *Hall) Join(conn net.Conn) {
 func (this *Hall) Join(conn MailBox) {
 	this.Lock()
 	defer this.Unlock()
 	player := NewPlayer(conn)
 	this.players = append(this.players, player)
 	this.matchPlayer(player)
+}
+
+func (this *Hall) JoinRoom(conn MailBox, slug string) {
+	this.Lock()
+	defer this.Unlock()
+	player := NewPlayer(conn)
+	this.players = append(this.players, player)
+	this.matchRoomPlayer(player, slug)
 }
 
 func (this *Hall) matchPlayer(player *Player) {
@@ -52,6 +59,17 @@ func (this *Hall) matchPlayer(player *Player) {
 		}
 	}
 	this.rooms = append(this.rooms, NewRoom(player))
+}
+
+func (this *Hall) matchRoomPlayer(player *Player, slug string) {
+	for _, room := range this.rooms {
+		if room.slug == slug {
+			room.Join(player)
+			return
+		}
+	}
+
+	this.rooms = append(this.rooms, NewRoomWithSlug(slug, player))
 }
 
 func (this *Hall) run() {

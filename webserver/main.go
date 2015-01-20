@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"runtime/debug"
+	"strings"
 
 	"github.com/athom/chess"
 	"github.com/go-martini/martini"
@@ -30,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	m.Get("/ws", websocket.Server{
+	m.Get("/ws/:roomslug", websocket.Server{
 		Config:  *wsConfig,
 		Handler: BuildConnection,
 	}.ServeHTTP)
@@ -51,8 +52,15 @@ func BuildConnection(ws *websocket.Conn) {
 	}()
 	defer ws.Close()
 
-	log.Println("ws connected ..")
+	array := strings.Split(ws.Request().URL.Path, `/ws/`)
+	if len(array) < 2 {
+		panic("room slug not found")
+	}
+
+	slug := array[1]
+
 	mb := chess.NewWebsocketMailBox(ws)
-	gameHall.Join(mb)
+	//gameHall.Join(mb)
+	gameHall.JoinRoom(mb, slug)
 	mb.Run()
 }

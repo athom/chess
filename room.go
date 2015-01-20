@@ -7,8 +7,13 @@ import (
 )
 
 func NewRoom(players ...*Player) (r *Room) {
+	return NewRoomWithSlug("", players...)
+}
+
+func NewRoomWithSlug(slug string, players ...*Player) (r *Room) {
 	r = &Room{
 		id:          bson.NewObjectId().Hex(),
+		slug:        slug,
 		playerState: make(chan *PlayerState),
 		gameState:   make(chan *GameState),
 	}
@@ -22,6 +27,7 @@ func NewRoom(players ...*Player) (r *Room) {
 type Room struct {
 	sync.RWMutex
 	id          string
+	slug        string
 	game        *Game
 	playerBlack *Player
 	playerWhite *Player
