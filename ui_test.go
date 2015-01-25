@@ -7,7 +7,7 @@ import (
 )
 
 func TestGameStateWating(t *testing.T) {
-	g := NewGame(6, NewTextFormatter())
+	g := NewGame(6)
 	g.Move(Pos{0, 0}, Pos{0, 1}, BLACK)
 	g.Move(Pos{4, 0}, Pos{5, 4}, WHITE)
 

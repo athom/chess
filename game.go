@@ -8,19 +8,17 @@ var (
 	ErrGameOverBlackWin = errors.New("game over, black win")
 )
 
-func NewGame(size int, formatter Formatter) (r *Game) {
+func NewGame(size int) (r *Game) {
 	r = &Game{size: size}
-	r.formatter = formatter
 	r.reset()
 
 	return
 }
 
 type Game struct {
-	size      int
-	unitMap   map[Pos]*Unit
-	formatter Formatter
-	over      bool
+	size    int
+	unitMap map[Pos]*Unit
+	over    bool
 }
 
 func (this *Game) clear() {

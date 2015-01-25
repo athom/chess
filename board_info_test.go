@@ -9,15 +9,15 @@ import (
 
 func TestBoardInfo(t *testing.T) {
 	Convey("board info size", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		So(g.BoardInfo().Size, ShouldEqual, 6)
 
-		g = NewGame(7, NewTextFormatter())
+		g = NewGame(7)
 		So(g.BoardInfo().Size, ShouldEqual, 7)
 	})
 
 	Convey("initial game state", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		So(
 			goset.IsEqual(
 				g.BoardInfo().Units,
@@ -42,7 +42,7 @@ func TestBoardInfo(t *testing.T) {
 	})
 
 	Convey("black 1 is moved", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		g.Move(Pos{0, 0}, Pos{0, 1}, BLACK)
 		So(
 			goset.IsEqual(
@@ -68,7 +68,7 @@ func TestBoardInfo(t *testing.T) {
 	})
 
 	Convey("black 5 is moved", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		g.Move(Pos{4, 0}, Pos{5, 4}, BLACK)
 		So(
 			goset.IsEqual(
@@ -94,7 +94,7 @@ func TestBoardInfo(t *testing.T) {
 	})
 
 	Convey("white 5 eats black 1", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		g.Move(Pos{0, 0}, Pos{0, 1}, BLACK)
 		g.Move(Pos{4, 0}, Pos{5, 4}, WHITE)
 		So(
@@ -121,7 +121,7 @@ func TestBoardInfo(t *testing.T) {
 }
 func TestMyBoardInfo(t *testing.T) {
 	Convey("white 5 eats black 1", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		g.Move(Pos{0, 0}, Pos{0, 1}, BLACK)
 		g.Move(Pos{4, 0}, Pos{5, 4}, WHITE)
 		bi := g.BoardInfo()
@@ -172,14 +172,14 @@ func TestMyBoardInfo(t *testing.T) {
 	})
 	Convey("movable", t, func() {
 		Convey("ready state", func() {
-			g := NewGame(6, NewTextFormatter())
+			g := NewGame(6)
 			bi := g.BoardInfo()
 			So(NewMyBoardInfo(bi, WHITE).Movable, ShouldBeFalse)
 			So(NewMyBoardInfo(bi, BLACK).Movable, ShouldBeTrue)
 		})
 
 		Convey("going state", func() {
-			g := NewGame(6, NewTextFormatter())
+			g := NewGame(6)
 			g.Move(Pos{0, 0}, Pos{0, 1}, BLACK)
 			bi := g.BoardInfo()
 			So(NewMyBoardInfo(bi, WHITE).Movable, ShouldBeTrue)

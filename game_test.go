@@ -9,7 +9,7 @@ import (
 
 func TestImportGameStateText(t *testing.T) {
 	Convey("load valid manual", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		g.LoadBoardInfo(BoardInfo{
 			Units{
 				UnitInfo{Unit{BLACK, 1, false}, Pos{0, 0}},
@@ -64,7 +64,7 @@ func TestImportGameStateText(t *testing.T) {
 
 func TestGameSelectUnitAndShoePoints(t *testing.T) {
 	Convey("default movable positions", t, func() {
-		g := NewGame(6, NewTextFormatter())
+		g := NewGame(6)
 		var ps []Pos
 		ps = g.Select(Pos{0, 0})
 		So(
@@ -139,7 +139,7 @@ func TestGameSelectUnitAndShoePoints(t *testing.T) {
 
 	Convey("ceitain situation movable positions", t, func() {
 		Convey("white 5 is surounded closely", func() {
-			g := NewGame(6, NewTextFormatter())
+			g := NewGame(6)
 			g.LoadBoardInfo(BoardInfo{
 				Units{
 					UnitInfo{Unit{BLACK, 1, false}, Pos{0, 0}},
@@ -164,7 +164,7 @@ func TestGameSelectUnitAndShoePoints(t *testing.T) {
 		})
 
 		Convey("white 5 is surounded loosely", func() {
-			g := NewGame(6, NewTextFormatter())
+			g := NewGame(6)
 			g.LoadBoardInfo(BoardInfo{
 				Units{
 					UnitInfo{Unit{BLACK, 1, false}, Pos{1, 2}},

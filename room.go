@@ -63,7 +63,7 @@ func (this *Room) Watchers() []*Player {
 func (this *Room) initGame() {
 	if this.playerBlack != nil && this.playerWhite != nil {
 		if this.game == nil {
-			this.game = NewGame(6, NewTextFormatter())
+			this.game = NewGame(6)
 		} else {
 			this.game.reset()
 		}
