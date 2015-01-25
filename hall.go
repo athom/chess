@@ -7,7 +7,6 @@ import (
 
 func NewHall() (r *Hall) {
 	r = &Hall{
-		//Joins: make(chan net.Conn),
 		Joins: make(chan MailBox),
 	}
 	r.run()
@@ -19,8 +18,7 @@ type Hall struct {
 	game    *Game
 	rooms   []*Room
 	players []*Player
-	//Joins   chan net.Conn
-	Joins chan MailBox
+	Joins   chan MailBox
 }
 
 func (this *Hall) Players() []*Player {

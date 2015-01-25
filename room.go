@@ -76,13 +76,12 @@ func (this *Room) Join(player *Player) {
 	this.Lock()
 	defer this.Unlock()
 
-	this.connectPlayerState(player)
-
 	if this.playerBlack == nil {
 		player.side = BLACK
 		//player.Ready()
 		this.playerBlack = player
 		this.broadcastWait()
+		this.connectPlayerState(player)
 		return
 	}
 
@@ -91,6 +90,7 @@ func (this *Room) Join(player *Player) {
 		//player.Ready()
 		this.playerWhite = player
 		this.broadcastReady()
+		this.connectPlayerState(player)
 		return
 	}
 
