@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/athom/chess"
+	"github.com/athom/chess/ui"
 	"github.com/athom/easysignal"
 
 	"bufio"
@@ -31,7 +32,7 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			ui := chess.NewConsoleUI(gs)
+			ui := ui.NewConsoleUI(gs)
 			ui.Render()
 
 			if gs.MyBoardInfo != nil && gs.MyBoardInfo.Movable {

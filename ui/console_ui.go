@@ -1,9 +1,12 @@
-package chess
+package ui
 
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/athom/chess"
 )
+
 
 const (
 	UI_WAITING = `Welcome to yeer's chess
@@ -17,15 +20,15 @@ Waiting for other player...`
 	UI_GAME_OVER_LOSE    = `Game over, you lose...`
 )
 
-var tipsMap map[OutState]string = map[OutState]string{
-	OUT_WAIT:              UI_WAITING,
-	OUT_READY:             UI_READY,
-	OUT_ILLEGAL_OPERATION: UI_ILLEGAL_OPERATION,
-	OUT_BOARD_UPDATED:     UI_BOARD_UPDATED,
-	OUT_OPPOENENT_ABORT:   UI_OPPOENENT_ABORT,
-	OUT_OPPOENENT_GIVEUP:  UI_OPPOENENT_GIVEUP,
-	OUT_GAMEOVER_WIN:      UI_GAME_OVER_WIN,
-	OUT_GAMEOVER_LOSE:     UI_GAME_OVER_LOSE,
+var tipsMap map[chess.OutState]string = map[chess.OutState]string{
+	chess.OUT_WAIT:              UI_WAITING,
+	chess.OUT_READY:             UI_READY,
+	chess.OUT_ILLEGAL_OPERATION: UI_ILLEGAL_OPERATION,
+	chess.OUT_BOARD_UPDATED:     UI_BOARD_UPDATED,
+	chess.OUT_OPPOENENT_ABORT:   UI_OPPOENENT_ABORT,
+	chess.OUT_OPPOENENT_GIVEUP:  UI_OPPOENENT_GIVEUP,
+	chess.OUT_GAMEOVER_WIN:      UI_GAME_OVER_WIN,
+	chess.OUT_GAMEOVER_LOSE:     UI_GAME_OVER_LOSE,
 }
 
 var whiteUnitView map[int]string = map[int]string{
@@ -40,18 +43,18 @@ var whiteUnitView map[int]string = map[int]string{
 	9: "九",
 }
 
-func NewConsoleUI(gs *GameState) (r *ConsoleUI) {
+func NewConsoleUI(gs *chess.GameState) (r *ConsoleUI) {
 	r = &ConsoleUI{gs}
 	return
 }
 
 type ConsoleUI struct {
-	gameState *GameState
+	gameState *chess.GameState
 }
 
 func (this *ConsoleUI) Render() (r string) {
 	r = tipsMap[this.gameState.State]
-	if this.gameState.State != OUT_ILLEGAL_OPERATION && this.gameState.MyBoardInfo != nil {
+	if this.gameState.State != chess.OUT_ILLEGAL_OPERATION && this.gameState.MyBoardInfo != nil {
 		r += "\n"
 		r += this.printBoard()
 	}
@@ -71,7 +74,7 @@ func (this *ConsoleUI) printBoard() (r string) {
 		line := ``
 		x := 0
 		for x < width {
-			u := myBoard.FindUnit(Pos{x, y})
+			u := myBoard.FindUnit(chess.Pos{x, y})
 			line += this.unitAppearance(u.Unit)
 			x += 1
 		}
@@ -82,8 +85,8 @@ func (this *ConsoleUI) printBoard() (r string) {
 	return
 }
 
-func (this *ConsoleUI) unitAppearance(u Unit) string {
-	if u.Side == NONE {
+func (this *ConsoleUI) unitAppearance(u chess.Unit) string {
+	if u.Side == chess.NONE {
 		return " 0"
 	}
 	side := this.gameState.MyBoardInfo.Side
