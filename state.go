@@ -23,6 +23,7 @@ const (
 	OUT_GAMEOVER_WIN
 	OUT_GAMEOVER_LOSE
 	OUT_GAMEOVER_FOR_WATCHER
+	OUT_WATCHER_LEAVE
 )
 
 func (this InState) String() string {

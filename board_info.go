@@ -43,7 +43,7 @@ func GameOverBoardInfo(bi BoardInfo, side Side) (r *MyBoardInfo) {
 func NewMyBoardInfo(bi BoardInfo, side Side) (r *MyBoardInfo) {
 	r = &MyBoardInfo{bi, side, false}
 	if side == NONE {
-		return
+		r.Movable = false
 	}
 
 	if side == WHITE {

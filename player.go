@@ -21,6 +21,10 @@ type Player struct {
 	mailBox     MailBox
 }
 
+func (this *Player) IsWatcher() bool {
+	return this.side != WHITE && this.side != BLACK
+}
+
 func (this *Player) Ready() {
 	this.playerState <- &PlayerState{Id: this.id, State: IN_READY}
 }

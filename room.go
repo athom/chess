@@ -1,6 +1,7 @@
 package chess
 
 import (
+	"log"
 	"sync"
 
 	"gopkg.in/mgo.v2/bson"
@@ -26,14 +27,15 @@ func NewRoomWithSlug(slug string, players ...*Player) (r *Room) {
 
 type Room struct {
 	sync.RWMutex
-	id          string
-	slug        string
-	game        *Game
-	playerBlack *Player
-	playerWhite *Player
-	watchers    []*Player
-	playerState chan *PlayerState
-	gameState   chan *GameState
+	id               string
+	slug             string
+	game             *Game
+	playerBlack      *Player
+	playerWhite      *Player
+	watchers         []*Player
+	playerState      chan *PlayerState
+	gameState        chan *GameState
+	currentBoardInfo *BoardInfo
 }
 
 func (this *Room) JoinableForPlay() (r bool) {
@@ -76,12 +78,13 @@ func (this *Room) Join(player *Player) {
 	this.Lock()
 	defer this.Unlock()
 
+	this.connectPlayerState(player)
+
 	if this.playerBlack == nil {
 		player.side = BLACK
 		//player.Ready()
 		this.playerBlack = player
 		this.broadcastWait()
-		this.connectPlayerState(player)
 		return
 	}
 
@@ -90,11 +93,11 @@ func (this *Room) Join(player *Player) {
 		//player.Ready()
 		this.playerWhite = player
 		this.broadcastReady()
-		this.connectPlayerState(player)
 		return
 	}
 
 	this.watchers = append(this.watchers, player)
+	this.showLiveSnapshot()
 	return
 }
 
@@ -112,9 +115,12 @@ func (this *Room) Leave(player *Player) {
 		}
 		return
 	}
+
 	if this.playerWhite == player {
 		this.playerWhite = nil
+		return
 	}
+
 	for i, watcher := range this.watchers {
 		if player == watcher {
 			this.watchers = append(this.watchers[0:i], this.watchers[i+1:]...)
@@ -202,9 +208,26 @@ func (this *Room) broadcastReady() {
 			MyBoardInfo: NewMyBoardInfo(this.game.BoardInfo(), WHITE),
 		}
 	}
+
+}
+
+func (this *Room) showLiveSnapshot() {
+	if this.currentBoardInfo != nil {
+		log.Println(">>>>>>>>>>>> live")
+		bi := NewMyBoardInfo(*this.currentBoardInfo, BLACK)
+		for _, watcher := range this.watchers {
+			watcher.gameState <- &GameState{
+				State:       OUT_BOARD_UPDATED,
+				MyBoardInfo: bi,
+			}
+		}
+	}
 }
 
 func (this *Room) broadcastMove() {
+	bi := this.game.BoardInfo()
+	this.currentBoardInfo = &bi
+
 	this.playerBlack.gameState <- &GameState{
 		State:       OUT_BOARD_UPDATED,
 		MyBoardInfo: NewMyBoardInfo(this.game.BoardInfo(), BLACK),
@@ -214,6 +237,7 @@ func (this *Room) broadcastMove() {
 		MyBoardInfo: NewMyBoardInfo(this.game.BoardInfo(), WHITE),
 	}
 	for _, watcher := range this.watchers {
+		log.Println("move ...")
 		watcher.gameState <- &GameState{
 			State:       OUT_BOARD_UPDATED,
 			MyBoardInfo: NewMyBoardInfo(this.game.BoardInfo(), NONE),
@@ -246,23 +270,27 @@ func (this *Room) broadcastGameOver(winSide Side) {
 }
 
 func (this *Room) broadcastLeave(id string) {
+	player := this.findPlayer(id)
+	this.Leave(player)
+	state := OUT_OPPOENENT_ABORT
+	if player.IsWatcher() {
+		state = OUT_WATCHER_LEAVE
+	}
+
 	this.playerBlack.gameState <- &GameState{
-		State: OUT_OPPOENENT_ABORT,
+		State: state,
 	}
 
 	if this.playerWhite != nil {
 		this.playerWhite.gameState <- &GameState{
-			State: OUT_OPPOENENT_ABORT,
+			State: state,
 		}
 	}
 	for _, watcher := range this.watchers {
 		watcher.gameState <- &GameState{
-			State: OUT_OPPOENENT_ABORT,
+			State: state,
 		}
 	}
-
-	player := this.findPlayer(id)
-	this.Leave(player)
 }
 
 func (this *Room) findPlayer(id string) (r *Player) {
