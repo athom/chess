@@ -277,8 +277,10 @@ func (this *Room) broadcastLeave(id string) {
 		state = OUT_WATCHER_LEAVE
 	}
 
-	this.playerBlack.gameState <- &GameState{
-		State: state,
+	if this.playerBlack != nil {
+		this.playerBlack.gameState <- &GameState{
+			State: state,
+		}
 	}
 
 	if this.playerWhite != nil {
